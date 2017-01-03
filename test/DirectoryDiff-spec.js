@@ -1,4 +1,3 @@
-"use strict";
 var expect = require('chai').expect;
 var DirectoryDiff = require('../lib/DirectoryDiff');
 var sinon = require('sinon');

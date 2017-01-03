@@ -1,4 +1,3 @@
-"use strict";
 var child_process = require('child_process');
 var versionCalc = require('./lib/version-calculations');
 var commander = require('./lib/npm-commander');
@@ -116,42 +115,6 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
   });
 };
 
-exports.publishPackage = function publishPackage(options, cb) {
-  // backwards compatibility: there was no options parameter.
-  if (typeof options !== 'object' && !cb) {
-    cb = options;
-    options = {};
-  }
-  function publishTheDamnThing(cb) {
-    commander.exec("npm publish .", cb);
-  }
-
-  if (!options.registry)
-    return publishTheDamnThing(cb);
-
-  // We can't use --registry because https://github.com/npm/npm/issues/5522.
-  // So we have to change the package.json, and then change it back again!
-  commander.readPackage(function (err, packageJson) {
-    if (err)
-      return cb(err);
-
-    var overridenPackageJson = Object.assign({}, packageJson, {publishConfig: {registry: options.registry}});
-
-    commander.writePackage(overridenPackageJson, function (err) {
-      if (err)
-        return cb(err);
-
-      publishTheDamnThing(function (err) {
-        if (err)
-          return cb(err);
-
-        // change it back again
-        commander.writePackage(packageJson, cb);
-      });
-    });
-  });
-};
-
 exports.shrinkwrapPackage = function (cb) {
   commander.exec("npm shrinkwrap", function (err) {
     cb(err);
@@ -185,7 +148,7 @@ exports.prepareForRelease = function (options, cb) {
       if (isPublishedVersionSimilar) {
         packageJson.private = true;
         packageJson.version = currentPublishedVersion;
-        commander.writePackage(packageJson, (err)=> {
+        commander.writePackage(packageJson, (err) => {
           console.log("No release because it's already published");
           cb(err);
           return;
@@ -197,24 +160,17 @@ exports.prepareForRelease = function (options, cb) {
             return;
           }
 
-          function continue1(cb) {
-            if (options.shouldPublishToWixRegistry)
-              exports.publishPackage({registry: "http://repo.dev.wix/artifactory/api/npm/npm-local/"}, cb);
-            else
-              cb();
-          }
-
           if (options.shouldShrinkWrap) {
             exports.shrinkwrapPackage(function (err) {
               if (err) {
                 cb(err);
               }
               else
-                continue1(cb);
+                cb();
             });
           }
           else
-            continue1(cb);
+            cb();
         });
       }
     });

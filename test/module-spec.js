@@ -1,4 +1,3 @@
-"use strict";
 var expect = require('chai').expect;
 var _ = require('lodash');
 var versionCalc = require('../lib/version-calculations');

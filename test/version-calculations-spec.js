@@ -1,4 +1,3 @@
-"use strict";
 var assert = require('assert');
 var versionCalc = require('../lib/version-calculations');
 
