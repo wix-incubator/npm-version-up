@@ -13,7 +13,7 @@ function updatePackageContent() {
   support.addLineToReadme();
 }
 
-describe("wnpm-release", function () {
+describe("npm-version-up", function () {
   // This test will work only in CI given that it's a destructive test (it really publishes!)
   // If you want to test it locally, do `IS_BUILD_AGENT=1 npm test`
   if (!process.env.IS_BUILD_AGENT)
@@ -42,7 +42,7 @@ describe("wnpm-release", function () {
     });
 
     it("should do nothing if package is private", function (done) {
-      shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release", function (code) {
+      shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up", function (code) {
         expect(code).to.equal(0);
         expect(shelljs.test('-f', 'npm-shrinkwrap.json')).to.be.false;
         done();
@@ -68,7 +68,7 @@ describe("wnpm-release", function () {
           var expectedNextVersion = versionCalc.calculateNextVersionPackage(currentPackageVersion,
             publishedVersions || []);
 
-          shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release", function (code) {
+          shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up", function (code) {
             expect(code).to.equal(0);
             expect(shelljs.test('-f', 'npm-shrinkwrap.json')).to.be.true;
             checkPublishing(packageName, expectedNextVersion, done);
@@ -88,7 +88,7 @@ describe("wnpm-release", function () {
           var expectedNextVersion = versionCalc.calculateNextVersionPackage(currentPackageVersion,
             publishedVersions || []);
 
-          shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release --no-shrinkwrap", function (code) {
+          shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up --no-shrinkwrap", function (code) {
             expect(code).to.equal(0);
             expect(shelljs.test('-f', 'npm-shrinkwrap.json')).to.be.false;
 
@@ -126,7 +126,7 @@ describe("wnpm-release", function () {
           support.writePackageJson(packageJsonWithUnpublishableRepoButPublishableVersion(packageJson,
             newlyExpectedNextVersion));
 
-          shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release --publish-to-wix-registry", function (code) {
+          shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up --publish-to-wix-registry", function (code) {
             expect(code).to.equal(0);
 
             support.writePackageJson(packageJson);
@@ -152,7 +152,7 @@ describe("wnpm-release", function () {
           var expectedNextVersion = versionCalc.calculateNextVersionPackage(currentPackageVersion,
             publishedVersions || []);
 
-          shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release --publish-to-wix-registry", function (code) {
+          shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up --publish-to-wix-registry", function (code) {
             expect(code).to.equal(0);
 
             ensurePublishedVersionIncludesVersion(packageName, expectedNextVersion, 10, function (err, ensured) {
@@ -161,7 +161,7 @@ describe("wnpm-release", function () {
 
               resetPackageVersionTo(currentPackageVersion);
 
-              shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release --publish-to-wix-registry", function (code) {
+              shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up --publish-to-wix-registry", function (code) {
                 expect(code).to.equal(0);
                 const packageJson = support.readPackageJson();
 
@@ -190,7 +190,7 @@ describe("wnpm-release", function () {
     });
 
     it("should run commands via nvm", function (done) {
-      shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release", function (code) {
+      shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up", function (code) {
         expect(code).to.equal(0);
         expect(shelljs.test('-f', '.nvmrc')).to.be.true;
         expect(output).to.be.string('Running \'nvm exec npm view');
@@ -209,7 +209,7 @@ describe("wnpm-release", function () {
     });
 
     it("should run commands via nvm", function (done) {
-      shelljs.exec('node ' + __dirname + "/../scripts/wnpm-release --no-shrinkwrap", function (code) {
+      shelljs.exec('node ' + __dirname + "/../scripts/npm-version-up --no-shrinkwrap", function (code) {
         expect(code).to.equal(0);
         expect(shelljs.test('-f', '.nvmrc')).to.be.false;
         expect(output).to.be.string('Running \'npm view');

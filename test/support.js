@@ -80,6 +80,5 @@ function defaults() {
     folder: '.',
     name: undefined,
     private: false,
-    registry: 'http://repo.dev.wix/artifactory/api/npm/npm-local/'
   };
 }
