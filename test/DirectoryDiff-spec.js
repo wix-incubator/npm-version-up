@@ -16,10 +16,10 @@ describe('DirectoryDiff', () => {
     shelljs.exec.callsArgWith(1, code, output, stderr);
   }
 
-  it('should call linux diff', () => {
+  it('should call linux diff', done => {
     givenDiffReturns(0, 'output');
 
-    directoryDiff.compareDirectories('v1', 'v2').then(_ => {
+    directoryDiff.compareDirectories('v1', 'v2').then(() => {
       sinon.assert.calledWith(shelljs.exec, 'diff -rq v1 v2');
       done();
     });
