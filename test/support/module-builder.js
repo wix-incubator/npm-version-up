@@ -8,7 +8,7 @@ class ModuleBuilder {
     this._dir = dir;
     shelljs.mkdir('-p', this._dir);
     console.log(path.join(this._dir + '/.npmrc'));
-    fs.writeFileSync(path.join(this._dir + '/.npmrc'), '//localhost:3010/:_password=cXdl\n//localhost:3010/:username=qwe\n//localhost:3010/:email=qwe@qwe.lt\n//localhost:3010/:always-auth=false');
+    fs.writeFileSync(path.join(this._dir + '/.npmrc'), 'registry=http://localhost:3010\n//localhost:3010/:_password=cXdl\n//localhost:3010/:username=qwe\n//localhost:3010/:email=qwe@qwe.lt\n//localhost:3010/:always-auth=false');
   }
 
   packageJson(overrides) {

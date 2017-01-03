@@ -57,6 +57,8 @@ exports.normalizeVersions = function normalizeVersions(versions) {
 exports.isSameAsPublished = function isAlreadyPublished(cb) {
   commander.readPackage(function (err, packageJson) {
     var packageName = packageJson.name;
+    var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
+    var registryOption = registry ? "--registry " + registry : "";
 
     exports.findPublishedVersions(packageName, function (err, registryVersions) {
       if (err) {
@@ -69,7 +71,7 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
 
       if (currentPublishedVersion) {
         var packageHandler = PackageHandler(fs, shelljs);
-        var versionFetcher = VersionFetcher(commander, shelljs, randomDirGenerator, packageHandler);
+        var versionFetcher = VersionFetcher(commander, shelljs, randomDirGenerator, packageHandler, registryOption);
         var directoryDiff = DirectoryDiff(shelljs);
         var versionComparator = VersionComparator(directoryDiff, versionFetcher, shelljs);
 

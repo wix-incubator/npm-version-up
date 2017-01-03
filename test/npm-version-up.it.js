@@ -49,7 +49,8 @@ describe("npm-version-up", function () {
   it('should increment version and write npm-shrinkwrap.json for a published package', () => {
     module = fixtures.module({publishConfig: {registry: registry.url}})
       .switchTo()
-      .publishTo(registry.url);
+      .publishTo(registry.url)
+      .addFile('some-file', 'so-that-there-is-change');
     const originalPackageJson = module.readPackageJson();
 
     const publishedVersion = registry.latestVersionFor(originalPackageJson.name);
@@ -63,7 +64,7 @@ describe("npm-version-up", function () {
   });
 
   //TODO: maybe unpm does not support npm pack?
-  it.skip('should not increment version if package was not updated', () => {
+  it('should not increment version if package was not updated', () => {
     module = fixtures
       .module({publishConfig: {registry: registry.url}})
       .switchTo()

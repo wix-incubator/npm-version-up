@@ -65,17 +65,16 @@ describe('VersionFetcher', () => {
     versionFetcher = VersionFetcher(commander, shell, randomDirGenerator, packageHandler);
   });
 
-  it('should retrieve the version from npm and pack it', (done) => {
-    versionFetcher.fetch(packageName, packageVersion)
+  it('should retrieve the version from npm and pack it', () => {
+    return versionFetcher.fetch(packageName, packageVersion)
       .then((pathToVersion) => {
         assert.deepEqual(commands, [
           'mkdir /tmp/v1',
           'pushd /tmp/v1',
-          `npm pack ${packageName}@${packageVersion}`,
+          `npm pack  ${packageName}@${packageVersion}`,
           `tar -xf ${tarFileName}`
         ]);
         expect(pathToVersion).to.be.string(`${rootTempPath}/v1/package`);
-        done();
       });
   });
 

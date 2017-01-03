@@ -61,6 +61,13 @@ class Registry {
     afterEach(() => this.stop());
     return this;
   }
+
+  beforeAndAfter() {
+    before(() => this.start());
+    after(() => this.stop());
+    return this;
+  }
+
 }
 
 module.exports = () => new Registry();

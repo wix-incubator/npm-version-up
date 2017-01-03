@@ -8,15 +8,28 @@ var commander = require('../lib/npm-commander');
 
 var index = require('..');
 
+const fixtures = require('./support/fixtures'),
+  npmRegistry = require('./support/npm-registry');
+
 describe('package', function () {
   this.timeout(60000);
+  const registry = npmRegistry().beforeAndAfter();
+  let module;
+
+  beforeEach(() => module = {rm: _.noop});
+  after(() => module.rm());
 
   describe("#getRegistryPackageInfo", function () {
 
     it("should find package info of an existing package", function (done) {
-      index.getRegistryPackageInfo('wnpm-ci', function (err, packageInfo) {
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+      const packageJson = module.readPackageJson();
+
+      index.getRegistryPackageInfo(packageJson.name, function (err, packageInfo) {
         expect(err).to.be.undefined;
-        expect(packageInfo.repository.url).to.equal('git+https://github.com/wix/wnpm-ci.git', packageInfo.repository.url);
+        expect(packageInfo.name).to.equal(packageJson.name);
         done(err);
       });
     });
@@ -33,9 +46,14 @@ describe('package', function () {
   describe("#findPublishedVersions", function () {
 
     it("should find published versions of an existing package", function (done) {
-      index.findPublishedVersions('wnpm-ci', function (err, publishedVersions) {
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+      const packageJson = module.readPackageJson();
+
+      index.findPublishedVersions(packageJson.name, function (err, publishedVersions) {
         expect(err).to.be.undefined;
-        expect(_.take(publishedVersions, 7)).to.include.members(['6.2.0']);
+        expect(publishedVersions.pop()).to.equal("1.0.0");
         done(err);
       });
     });
@@ -69,19 +87,13 @@ describe('package', function () {
   });
 
   describe("#incrementPatchVersionOfPackage", function () {
-    var tempDir, packageJson;
-
-    before(function () {
-      tempDir = support.clone();
-      packageJson = support.readPackageJson();
-    });
-
-    after(function () {
-      support.rmFolder(tempDir);
-    });
 
     it("should increment patch version of current package", function (done) {
-      var currentPackageVersion = packageJson.version;
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+      const packageJson = module.readPackageJson();
+      const currentPackageVersion = packageJson.version;
 
       index.findPublishedVersions(packageJson.name, function (err, publishedVersions) {
         if (err) {
@@ -95,7 +107,7 @@ describe('package', function () {
         index.incrementPatchVersionOfPackage(function (err, nextVersion) {
           expect(err).to.be.undefined;
           expect(nextVersion).to.equal(expectedNextVersion);
-          expect(support.readPackageJson().version).to.equal(expectedNextVersion);
+          expect(module.readPackageJson().version).to.equal(expectedNextVersion);
           if (err) {
             done(err);
             return;
@@ -104,7 +116,7 @@ describe('package', function () {
           index.incrementPatchVersionOfPackage(function (err, nextVersion) {
             expect(err).to.be.undefined;
             expect(nextVersion).to.equal(expectedNextVersion);
-            expect(support.readPackageJson().version).to.equal(expectedNextVersion);
+            expect(module.readPackageJson().version).to.equal(expectedNextVersion);
             done(err);
           });
         });
@@ -113,31 +125,11 @@ describe('package', function () {
   });
 
   describe("#isSameAsPublished", function () {
-    var tempDir, packageJson, packageName, packageVersion;
-
-    const getPackage = (packegeName, cb) => {
-      tempDir = support.cloneDir();
-      commander.exec(`npm pack ${packegeName}`, function (err, output) {
-        support.tarExtract(output, () => {
-          shelljs.cd('./package');
-          packageJson = support.readPackageJson();
-          cb();
-        });
-      });
-    };
-
-    beforeEach(function (done) {
-      var packageJson = support.readPackageJson();
-      packageName = packageJson.name;
-      packageVersion = packageJson.version;
-      getPackage(packageName, done);
-    });
-
-    afterEach(function () {
-      support.rmFolder(tempDir);
-    });
-
     it("should not publish for already published version", function (done) {
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+
       expect(index.isSameAsPublished(function (err, isSameAsPublished) {
         expect(isSameAsPublished).to.be.true;
         done();
@@ -145,9 +137,11 @@ describe('package', function () {
     });
 
     it("should publish an updated version", function (done) {
-      let aPackage = support.readPackageJson();
-      aPackage.author = aPackage.author + ' bla bla ';
-      support.writePackageJson(aPackage);
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+
+      module.addFile('some-file', 'some-data');
 
       expect(index.isSameAsPublished(function (err, isSameAsPublished) {
         expect(isSameAsPublished).to.be.false;
@@ -156,8 +150,17 @@ describe('package', function () {
     });
 
     it('should load latest published version', (done) => {
-      index.findPublishedVersions(packageName, (err, registryVersions) => {
-        const expectedCurrentPublishedVersion = versionCalc.calculateCurrentPublished(packageVersion, registryVersions);
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo()
+        .publishTo(registry.url);
+
+      module.addFile('some-file', 'some-data');
+      module.execVersionUp();
+      module.publishTo(registry.url);
+      const packageJson = module.readPackageJson();
+
+      index.findPublishedVersions(packageJson.name, (err, registryVersions) => {
+        const expectedCurrentPublishedVersion = versionCalc.calculateCurrentPublished(packageJson.version, registryVersions);
         expect(index.isSameAsPublished(function (err, isSameAsPublished, currentPublishedVersion) {
           expect(currentPublishedVersion).to.equal(expectedCurrentPublishedVersion);
           done();
