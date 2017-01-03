@@ -122,10 +122,6 @@ exports.shrinkwrapPackage = function (cb) {
 };
 
 exports.prepareForRelease = function (options, cb) {
-  // backwards compatibility: there was no options parameter. Instead shouldShrinkwrap was sent as first parameter
-  if (typeof options !== 'object')
-    options = {shouldShrinkWrap: options};
-
   commander.setup();
 
   commander.readPackage(function (err, packageJson) {
