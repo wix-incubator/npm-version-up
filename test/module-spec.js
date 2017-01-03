@@ -35,6 +35,9 @@ describe('package', function () {
     });
 
     it("should return undefined for a non-existing package", function (done) {
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo();
+
       index.getRegistryPackageInfo('i-really-hope-this-package-doesnt-exist', function (err, packageInfo) {
         expect(err).to.be.undefined;
         expect(packageInfo).to.be.undefined;
@@ -59,6 +62,9 @@ describe('package', function () {
     });
 
     it("should return undefined for a non-existing package", function (done) {
+      module = fixtures.module({publishConfig: {registry: registry.url}})
+        .switchTo();
+
       index.findPublishedVersions('i-really-hope-this-package-doesnt-exist', function (err, publishedVersions) {
         expect(err).to.be.undefined;
         expect(publishedVersions).to.be.undefined;
