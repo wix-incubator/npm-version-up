@@ -1,4 +1,4 @@
-# wnpm-ci
+# npm-version-up
 
 # What is this module
 This module contains all you need to have the ci build an npm package in the CI servers.

@@ -1,31 +1,25 @@
 {
-  "name": "wnpm-ci",
-  "version": "6.2.0",
-  "description": "CI support scripts for npm packages",
+  "name": "npm-version-up",
+  "version": "0.0.1",
+  "description": "Auto-increment package version for deployment",
   "main": "index.js",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wix/wnpm-ci"
+    "url": "https://github.com/wix/npm-version-up"
   },
   "scripts": {
-    "build": ":",
     "test": "mocha --reporter mocha-env-reporter",
-    "release": "./scripts/wnpm-release.js --no-shrinkwrap"
+    "release": "./scripts/npm-version-up.js --no-shrinkwrap"
   },
   "keywords": [
-    "ci",
-    "support",
-    "scripts",
+    "npm",
     "wix",
-    "npm"
+    "deploy"
   ],
-  "author": "Shahar Talmi <shahart@wix.com>",
+  "author": "Vilius Lukosius <vilius@wix.com>",
   "license": "MIT",
   "bin": {
-    "wnpm-release": "./scripts/wnpm-release.js"
+    "npm-version-up": "./scripts/npm-version-up.js"
   },
   "devDependencies": {
     "chai": "^3.3.0",
@@ -39,5 +33,8 @@
   "dependencies": {
     "shelljs": "^0.5.3",
     "thenify": "^3.2.0"
-  }
+  },
+  "engines": {
+    "node": ">=6"
+  }  
 }
