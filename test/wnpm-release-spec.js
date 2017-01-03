@@ -13,12 +13,7 @@ function updatePackageContent() {
   support.addLineToReadme();
 }
 
-describe("npm-version-up", function () {
-  // This test will work only in CI given that it's a destructive test (it really publishes!)
-  // If you want to test it locally, do `IS_BUILD_AGENT=1 npm test`
-  if (!process.env.IS_BUILD_AGENT)
-    return;
-
+describe("wnpm-release", function () {
   this.timeout(100000);
   var tempDir, packageJson, unhook, output;
 

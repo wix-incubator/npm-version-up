@@ -120,12 +120,6 @@ exports.publishPackage = function publishPackage(options, cb) {
     cb = options;
     options = {};
   }
-  if (!process.env['IS_BUILD_AGENT']) {
-    console.warn('not publishing package because we\'re not running in a CI build agent');
-    cb();
-    return;
-  }
-
   function publishTheDamnThing(cb) {
     commander.exec("npm publish .", cb);
   }
