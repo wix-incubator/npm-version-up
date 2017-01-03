@@ -1,4 +1,6 @@
-# npm-version-up
+# npm-version-up [![Build Status](https://img.shields.io/travis/wix/npm-version-up/master.svg?label=build%20status)](https://travis-ci.org/wix/npm-version-up) [![npm version](https://img.shields.io/npm/v/npm-version-up.svg)](https://www.npmjs.com/package/npm-version-up)
+
+**Work in Progress - do not USE!**
 
 Module that can be used to auto-increment package version for publishing. When it can be useful for you:
  - running a continuous integration set-up with org-local packages where you want to release with each ci build, but don't want to up versions manually;
