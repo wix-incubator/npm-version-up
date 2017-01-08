@@ -13,21 +13,20 @@ exports.getRegistryPackageInfo = function getRegistryPackageInfo(packageName, cb
   try {
     const packageHandler = PackageHandler(fs);
     const packageJson = packageHandler.readPackageJson();
-    var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
-    var registryOption = registry ? "--registry " + registry : "";
+    const registry = packageJson.publishConfig && packageJson.publishConfig.registry;
+    const registryOption = registry ? "--registry " + registry : "";
 
-    commander.execSilent("npm view " + registryOption + " --json " + packageName, function (err, output) {
-      if (err) {
-        if (err.message.indexOf("npm ERR! code E404") >= 0) {
-          cb(undefined, undefined);
-        } else {
-          console.error(err.message);
-          cb(err);
-        }
+    try {
+      const output = commander.execSilent("npm view " + registryOption + " --json " + packageName);
+      return cb(undefined, JSON.parse(output));
+    } catch (err) {
+      if (err.message.indexOf("npm ERR! code E404") >= 0) {
+        cb(undefined, undefined);
       } else {
-        cb(undefined, JSON.parse(output));
+        console.error(err.message);
+        cb(err);
       }
-    });
+    }
   } catch (e) {
     cb(e);
   }
@@ -95,7 +94,7 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
   try {
     const packageHandler = PackageHandler(fs);
     const packageJson = packageHandler.readPackageJson();
-    var packageName = packageJson.name;
+    const packageName = packageJson.name;
 
     exports.findPublishedVersions(packageName, function (err, registryVersions) {
       if (err) {
@@ -114,21 +113,15 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
         return;
       }
 
-      commander.exec("npm version --no-git-tag-version " + nextVersion, function (err) {
-        err ? cb(err, undefined) : cb(undefined, nextVersion);
-      });
-
+      commander.exec("npm version --no-git-tag-version " + nextVersion);
+      cb(undefined, nextVersion);
     });
   } catch (e) {
     cb(e);
   }
 };
 
-exports.shrinkwrapPackage = function (cb) {
-  commander.exec("npm shrinkwrap", function (err) {
-    cb(err);
-  });
-};
+exports.shrinkwrapPackage = () => commander.exec("npm shrinkwrap");
 
 exports.prepareForRelease = function (options, cb) {
   try {
@@ -161,13 +154,8 @@ exports.prepareForRelease = function (options, cb) {
           }
 
           if (options.shouldShrinkWrap) {
-            exports.shrinkwrapPackage(function (err) {
-              if (err) {
-                cb(err);
-              }
-              else
-                cb();
-            });
+            exports.shrinkwrapPackage();
+            cb();
           }
           else
             cb();
