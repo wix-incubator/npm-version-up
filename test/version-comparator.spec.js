@@ -1,6 +1,6 @@
-var sinon = require('sinon');
-var expect = require('chai').expect;
-var VersionComparator = require('../lib/version-comparator');
+const sinon = require('sinon'),
+  expect = require('chai').expect,
+  VersionComparator = require('../lib/version-comparator');
 
 describe('version-comparator', () => {
   const aVersion = "v1";

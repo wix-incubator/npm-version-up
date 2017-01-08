@@ -129,12 +129,12 @@ function isSameAsPublished(cb) {
 }
 
 function incrementPatchVersionOfPackage(cb) {
-  // We can't just require('package.json') because this code may be called from other packages
-  // as part of the build process (see README.md)
   try {
     const packageHandler = PackageHandler(fs);
+    // We can't just require('package.json') because this code may be called from other packages as part of the build process
     const packageJson = packageHandler.readPackageJson();
     const packageName = packageJson.name;
+    const localPackageVersion = packageJson.version;
 
     findPublishedVersions(packageName, function (err, registryVersions) {
       if (err) {
@@ -142,9 +142,7 @@ function incrementPatchVersionOfPackage(cb) {
         return;
       }
 
-      var localPackageVersion = packageJson.version;
-
-      var nextVersion = versionCalc.calculateNextVersionPackage(localPackageVersion, registryVersions || []);
+      const nextVersion = versionCalc.calculateNextVersionPackage(localPackageVersion, registryVersions || []);
 
       if (nextVersion === localPackageVersion) {
         process.nextTick(function () {
