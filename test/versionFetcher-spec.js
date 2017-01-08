@@ -110,7 +110,7 @@ describe('VersionFetcher', () => {
         return JSON.parse(jsons[path]);
       },
 
-      writePackageJson: (path, currPackage) => {
+      writePackageJson: (currPackage, path) => {
         jsons[path] = JSON.stringify(currPackage);
       }
     };

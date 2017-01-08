@@ -3,7 +3,7 @@ var versionCalc = require('./lib/version-calculator');
 var commander = require('./lib/npm-commander');
 var DirectoryDiff = require('./lib/directory-diff');
 var VersionFetcher = require('./lib/VersionFetcher');
-var PackageHandler = require('./lib/PackageHandler');
+var PackageHandler = require('./lib/package-handler');
 var VersionComparator = require('./lib/VersionComparator');
 var shelljs = require('shelljs');
 var fs = require('fs');
@@ -54,6 +54,7 @@ exports.normalizeVersions = function normalizeVersions(versions) {
 };
 
 exports.isSameAsPublished = function isAlreadyPublished(cb) {
+
   commander.readPackage(function (err, packageJson) {
     var packageName = packageJson.name;
     var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
@@ -69,7 +70,7 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
       var currentPublishedVersion = versionCalc.calculateCurrentPublished(localPackageVersion, registryVersions || []);
 
       if (currentPublishedVersion) {
-        var packageHandler = PackageHandler(fs, shelljs);
+        const packageHandler = PackageHandler(fs);
         var versionFetcher = VersionFetcher(commander, shelljs, randomDirGenerator, packageHandler, registryOption);
         var directoryDiff = DirectoryDiff(shelljs);
         var versionComparator = VersionComparator(directoryDiff, versionFetcher, shelljs);
