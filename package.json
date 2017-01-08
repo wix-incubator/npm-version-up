@@ -28,6 +28,7 @@
     "mocha": "~3.2.0",
     "semver": "~5.3.0",
     "sinon": "~1.17.7",
+    "sinon-chai": "~2.8.0",
     "unpm": "~1.5.0",
     "unpm-fs-backend": "~0.1.0"
   },
