@@ -1,9 +1,9 @@
 const versionCalc = require('./lib/version-calculator'),
   commander = require('./lib/npm-commander'),
   DirectoryDiff = require('./lib/directory-diff'),
-  VersionFetcher = require('./lib/VersionFetcher'),
+  VersionFetcher = require('./lib/version-fetcher'),
   PackageHandler = require('./lib/package-handler'),
-  VersionComparator = require('./lib/VersionComparator'),
+  VersionComparator = require('./lib/version-comparator'),
   shelljs = require('shelljs'),
   fs = require('fs'),
   randomDirGenerator = {generate: () => Math.ceil(Math.random() * 100000).toString()};

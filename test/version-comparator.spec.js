@@ -1,8 +1,8 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var VersionComparator = require('../lib/VersionComparator');
+var VersionComparator = require('../lib/version-comparator');
 
-describe('VersionComparator', () => {
+describe('version-comparator', () => {
   const aVersion = "v1";
   const aPackageName = 'aPackageName';
   const pathToPackedVersion = 'pathToPackedVersion';

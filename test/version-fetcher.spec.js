@@ -2,9 +2,9 @@ var sinon = require('sinon');
 var expect = require('chai').expect;
 var assert = require('chai').assert;
 var _ = require('lodash');
-var VersionFetcher = require('../lib/VersionFetcher');
+var VersionFetcher = require('../lib/version-fetcher');
 
-describe('VersionFetcher', () => {
+describe('version-fetcher', () => {
   const packageVersion = '1.2.3';
   const packageName = 'moshe';
   const rootTempPath = '/tmp';
