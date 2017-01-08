@@ -1,15 +1,65 @@
-var child_process = require('child_process');
-var versionCalc = require('./lib/version-calculator');
-var commander = require('./lib/npm-commander');
-var DirectoryDiff = require('./lib/directory-diff');
-var VersionFetcher = require('./lib/VersionFetcher');
-var PackageHandler = require('./lib/package-handler');
-var VersionComparator = require('./lib/VersionComparator');
-var shelljs = require('shelljs');
-var fs = require('fs');
-var randomDirGenerator = {generate: () => Math.ceil(Math.random() * 100000).toString()};
+const versionCalc = require('./lib/version-calculator'),
+  commander = require('./lib/npm-commander'),
+  DirectoryDiff = require('./lib/directory-diff'),
+  VersionFetcher = require('./lib/VersionFetcher'),
+  PackageHandler = require('./lib/package-handler'),
+  VersionComparator = require('./lib/VersionComparator'),
+  shelljs = require('shelljs'),
+  fs = require('fs'),
+  randomDirGenerator = {generate: () => Math.ceil(Math.random() * 100000).toString()};
 
-exports.getRegistryPackageInfo = function getRegistryPackageInfo(packageName, cb) {
+module.exports.getRegistryPackageInfo = getRegistryPackageInfo;
+module.exports.findPublishedVersions = findPublishedVersions;
+module.exports.normalizeVersions = normalizeVersions;
+module.exports.isSameAsPublished = isSameAsPublished;
+module.exports.incrementPatchVersionOfPackage = incrementPatchVersionOfPackage;
+module.exports.prepareForRelease = prepareForRelease;
+
+function prepareForRelease(options, cb) {
+  try {
+    const packageHandler = PackageHandler(fs);
+    const packageJson = packageHandler.readPackageJson();
+
+    if (packageJson.private) {
+      console.log("No release because package is private");
+      cb();
+      return;
+    }
+    isSameAsPublished((err, isPublishedVersionSimilar, currentPublishedVersion) => {
+      if (err) {
+        cb(err);
+        return;
+      }
+
+      if (isPublishedVersionSimilar) {
+        packageJson.private = true;
+        packageJson.version = currentPublishedVersion;
+        packageHandler.writePackageJson(packageJson);
+        console.log("No release because it's already published");
+        cb();
+        return;
+      } else {
+        incrementPatchVersionOfPackage(function (err) {
+          if (err) {
+            cb(err);
+            return;
+          }
+
+          if (options.shouldShrinkWrap) {
+            commander.exec("npm shrinkwrap");
+            cb();
+          }
+          else
+            cb();
+        });
+      }
+    });
+  } catch (e) {
+    cb(e);
+  }
+};
+
+function getRegistryPackageInfo(packageName, cb) {
   try {
     const packageHandler = PackageHandler(fs);
     const packageJson = packageHandler.readPackageJson();
@@ -30,30 +80,20 @@ exports.getRegistryPackageInfo = function getRegistryPackageInfo(packageName, cb
   } catch (e) {
     cb(e);
   }
-};
+}
 
-exports.findPublishedVersions = function findPublishedVersions(packageName, cb) {
-  exports.getRegistryPackageInfo(packageName, function (err, registryPackageinfo) {
+function findPublishedVersions(packageName, cb) {
+  getRegistryPackageInfo(packageName, function (err, registryPackageinfo) {
     if (err)
       cb(err);
     else if (registryPackageinfo === undefined)
       cb(undefined, undefined);
     else
-      cb(undefined, exports.normalizeVersions(registryPackageinfo.versions));
+      cb(undefined, normalizeVersions(registryPackageinfo.versions));
   });
-};
+}
 
-exports.normalizeVersions = function normalizeVersions(versions) {
-  if (!versions)
-    return [];
-
-  if (typeof versions === 'string')
-    return [versions];
-  else
-    return versions;
-};
-
-exports.isSameAsPublished = function isAlreadyPublished(cb) {
+function isSameAsPublished(cb) {
   try {
     const packageHandler = PackageHandler(fs);
     const packageJson = packageHandler.readPackageJson();
@@ -61,7 +101,7 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
     var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
     var registryOption = registry ? "--registry " + registry : "";
 
-    exports.findPublishedVersions(packageName, function (err, registryVersions) {
+    findPublishedVersions(packageName, function (err, registryVersions) {
       if (err) {
         cb(err);
         return;
@@ -86,9 +126,9 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
   } catch (e) {
     cb(e);
   }
-};
+}
 
-exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage(cb) {
+function incrementPatchVersionOfPackage(cb) {
   // We can't just require('package.json') because this code may be called from other packages
   // as part of the build process (see README.md)
   try {
@@ -96,7 +136,7 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
     const packageJson = packageHandler.readPackageJson();
     const packageName = packageJson.name;
 
-    exports.findPublishedVersions(packageName, function (err, registryVersions) {
+    findPublishedVersions(packageName, function (err, registryVersions) {
       if (err) {
         cb(err);
         return;
@@ -119,50 +159,14 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
   } catch (e) {
     cb(e);
   }
-};
+}
 
-exports.shrinkwrapPackage = () => commander.exec("npm shrinkwrap");
+function normalizeVersions(versions) {
+  if (!versions)
+    return [];
 
-exports.prepareForRelease = function (options, cb) {
-  try {
-    const packageHandler = PackageHandler(fs);
-    const packageJson = packageHandler.readPackageJson();
-
-    if (packageJson.private) {
-      console.log("No release because package is private");
-      cb();
-      return;
-    }
-    exports.isSameAsPublished((err, isPublishedVersionSimilar, currentPublishedVersion) => {
-      if (err) {
-        cb(err);
-        return;
-      }
-
-      if (isPublishedVersionSimilar) {
-        packageJson.private = true;
-        packageJson.version = currentPublishedVersion;
-        packageHandler.writePackageJson(packageJson);
-        console.log("No release because it's already published");
-        cb();
-        return;
-      } else {
-        exports.incrementPatchVersionOfPackage(function (err) {
-          if (err) {
-            cb(err);
-            return;
-          }
-
-          if (options.shouldShrinkWrap) {
-            exports.shrinkwrapPackage();
-            cb();
-          }
-          else
-            cb();
-        });
-      }
-    });
-  } catch (e) {
-    cb(e);
-  }
-};
+  if (typeof versions === 'string')
+    return [versions];
+  else
+    return versions;
+}
