@@ -18,20 +18,10 @@ describe('npm commander', function() {
     support.rmFolder(tempDir);
   });
 
-  describe('for a project with malformed .nvmrc', () => {
-
-    beforeEach(() => tempDir = support.clone({folder: './test/apps/nvmrc-malformed'}));
-
-    it('setup() should fail', () => {
-      expect(() => commander.setup()).to.throw('\'nvm install\' failed');
-    });
-  });
-
   describe('for a project with .nvmrc', () => {
 
     beforeEach(() => {
       tempDir = support.clone({folder: './test/apps/with-nvmrc'});
-      commander.setup();
     });
 
     it('exec() should fail given an invalid command', done => {

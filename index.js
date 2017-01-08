@@ -10,10 +10,9 @@ var fs = require('fs');
 var randomDirGenerator = {generate: () => Math.ceil(Math.random() * 100000).toString()};
 
 exports.getRegistryPackageInfo = function getRegistryPackageInfo(packageName, cb) {
-  commander.readPackage(function (err, packageJson) {
-    if (err)
-      cb(err);
-
+  try {
+    const packageHandler = PackageHandler(fs);
+    const packageJson = packageHandler.readPackageJson();
     var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
     var registryOption = registry ? "--registry " + registry : "";
 
@@ -29,7 +28,9 @@ exports.getRegistryPackageInfo = function getRegistryPackageInfo(packageName, cb
         cb(undefined, JSON.parse(output));
       }
     });
-  });
+  } catch (e) {
+    cb(e);
+  }
 };
 
 exports.findPublishedVersions = function findPublishedVersions(packageName, cb) {
@@ -54,8 +55,9 @@ exports.normalizeVersions = function normalizeVersions(versions) {
 };
 
 exports.isSameAsPublished = function isAlreadyPublished(cb) {
-
-  commander.readPackage(function (err, packageJson) {
+  try {
+    const packageHandler = PackageHandler(fs);
+    const packageJson = packageHandler.readPackageJson();
     var packageName = packageJson.name;
     var registry = packageJson.publishConfig && packageJson.publishConfig.registry;
     var registryOption = registry ? "--registry " + registry : "";
@@ -70,7 +72,6 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
       var currentPublishedVersion = versionCalc.calculateCurrentPublished(localPackageVersion, registryVersions || []);
 
       if (currentPublishedVersion) {
-        const packageHandler = PackageHandler(fs);
         var versionFetcher = VersionFetcher(commander, shelljs, randomDirGenerator, packageHandler, registryOption);
         var directoryDiff = DirectoryDiff(shelljs);
         var versionComparator = VersionComparator(directoryDiff, versionFetcher, shelljs);
@@ -82,13 +83,18 @@ exports.isSameAsPublished = function isAlreadyPublished(cb) {
         cb(undefined, false);
       }
     });
-  });
+
+  } catch (e) {
+    cb(e);
+  }
 };
 
 exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage(cb) {
   // We can't just require('package.json') because this code may be called from other packages
   // as part of the build process (see README.md)
-  commander.readPackage(function (err, packageJson) {
+  try {
+    const packageHandler = PackageHandler(fs);
+    const packageJson = packageHandler.readPackageJson();
     var packageName = packageJson.name;
 
     exports.findPublishedVersions(packageName, function (err, registryVersions) {
@@ -113,7 +119,9 @@ exports.incrementPatchVersionOfPackage = function incrementPatchVersionOfPackage
       });
 
     });
-  });
+  } catch (e) {
+    cb(e);
+  }
 };
 
 exports.shrinkwrapPackage = function (cb) {
@@ -123,13 +131,9 @@ exports.shrinkwrapPackage = function (cb) {
 };
 
 exports.prepareForRelease = function (options, cb) {
-  commander.setup();
-
-  commander.readPackage(function (err, packageJson) {
-    if (err) {
-      cb(err);
-      return;
-    }
+  try {
+    const packageHandler = PackageHandler(fs);
+    const packageJson = packageHandler.readPackageJson();
 
     if (packageJson.private) {
       console.log("No release because package is private");
@@ -145,11 +149,10 @@ exports.prepareForRelease = function (options, cb) {
       if (isPublishedVersionSimilar) {
         packageJson.private = true;
         packageJson.version = currentPublishedVersion;
-        commander.writePackage(packageJson, (err) => {
-          console.log("No release because it's already published");
-          cb(err);
-          return;
-        }); // don't publish
+        packageHandler.writePackageJson(packageJson);
+        console.log("No release because it's already published");
+        cb();
+        return;
       } else {
         exports.incrementPatchVersionOfPackage(function (err) {
           if (err) {
@@ -171,5 +174,7 @@ exports.prepareForRelease = function (options, cb) {
         });
       }
     });
-  });
+  } catch (e) {
+    cb(e);
+  }
 };
