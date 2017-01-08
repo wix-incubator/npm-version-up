@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var _ = require('lodash');
-var versionCalc = require('../lib/version-calculations');
+var versionCalc = require('../lib/version-calculator');
 var support = require('./support');
 var shelljs = require('shelljs');
 var commander = require('../lib/npm-commander');

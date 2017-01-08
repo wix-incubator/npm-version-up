@@ -2,7 +2,7 @@ const expect = require('chai').use(require('sinon-chai')).expect,
   directoryDiff = require('../lib/directory-diff'),
   sinon = require('sinon');
 
-describe.only('directory-diff', () => {
+describe('directory-diff', () => {
 
   it('should call linux diff', () => {
     const {exec, compareDirectories} = setupWithExecReturns(0, 'output');

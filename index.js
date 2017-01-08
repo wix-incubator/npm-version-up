@@ -1,5 +1,5 @@
 var child_process = require('child_process');
-var versionCalc = require('./lib/version-calculations');
+var versionCalc = require('./lib/version-calculator');
 var commander = require('./lib/npm-commander');
 var DirectoryDiff = require('./lib/directory-diff');
 var VersionFetcher = require('./lib/VersionFetcher');

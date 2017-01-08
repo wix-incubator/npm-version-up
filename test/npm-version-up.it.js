@@ -1,10 +1,10 @@
 const expect = require('chai').expect,
   fixtures = require('./support/fixtures'),
   npmRegistry = require('./support/npm-registry'),
-  calculateNextVersionPackage = require('../lib/version-calculations').calculateNextVersionPackage;
+  calculateNextVersionPackage = require('../lib/version-calculator').calculateNextVersionPackage;
 
 describe("npm-version-up", function () {
-  this.timeout(10000);
+  this.timeout(20000);
   const registry = npmRegistry().beforeAndAfterEach();
   let module;
   afterEach(() => module.rm());
