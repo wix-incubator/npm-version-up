@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+const prepareForRelease = require('../index').prepareForRelease;
 const shouldShrinkWrap = process.argv.indexOf("--no-shrinkwrap") < 0;
 
-require('../index').prepareForRelease({shouldShrinkWrap: shouldShrinkWrap}, err => {
-  if (err) {
-    console.log(err);
-    process.exit(1);
-  }
-});
+try {
+  prepareForRelease({shouldShrinkWrap});
+} catch (err) {
+  console.log(err);
+  process.exit(1);
+}
