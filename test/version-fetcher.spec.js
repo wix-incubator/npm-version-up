@@ -9,15 +9,12 @@ describe('version-fetcher', () => {
   const rootTempPath = '/tmp';
 
   let commander;
-  const aggregateCommand = (cmdName) => (arg, cb) => {
+  const aggregateCommand = cmdName => arg => {
     let tmpl = `${arg}`;
     if (cmdName) {
       tmpl = `${cmdName} ${arg}`
     }
     commands.push(tmpl);
-    if (cb) {
-      cb();
-    }
   };
 
   const tarFileName = `${packageName}-${packageVersion}.tgz`;
@@ -62,31 +59,27 @@ describe('version-fetcher', () => {
   });
 
   it('should retrieve the version from npm and pack it', () => {
-    return versionFetcher.fetch(packageName, packageVersion)
-      .then((pathToVersion) => {
-        assert.deepEqual(commands, [
-          'mkdir /tmp/v1',
-          'pushd /tmp/v1',
-          `npm pack  ${packageName}@${packageVersion}`,
-          `tar -xf ${tarFileName}`
-        ]);
-        expect(pathToVersion).to.be.string(`${rootTempPath}/v1/package`);
-      });
+    const pathToVersion = versionFetcher.fetch(packageName, packageVersion);
+    assert.deepEqual(commands, [
+      'mkdir /tmp/v1',
+      'pushd /tmp/v1',
+      `npm pack  ${packageName}@${packageVersion}`,
+      `tar -xf ${tarFileName}`
+    ]);
+    expect(pathToVersion).to.be.string(`${rootTempPath}/v1/package`);
   });
 
-  it('should pack current package', (done) => {
+  it('should pack current package', () => {
     var cwd = 'cwd';
 
-    versionFetcher.cloneAndPack(cwd).then((pathToCloned) => {
-      assert.deepEqual(commands, [
-        'mkdir /tmp/v1',
-        'pushd /tmp/v1',
-        `npm pack ${cwd}`,
-        `tar -xf *.tgz`
-      ]);
-      expect(pathToCloned).to.be.string(`${rootTempPath}/v1/package`);
-      done();
-    });
+    const pathToCloned = versionFetcher.cloneAndPack(cwd);
+    assert.deepEqual(commands, [
+      'mkdir /tmp/v1',
+      'pushd /tmp/v1',
+      `npm pack ${cwd}`,
+      `tar -xf *.tgz`
+    ]);
+    expect(pathToCloned).to.be.string(`${rootTempPath}/v1/package`);
   });
 
   it('should copy the version from one package to another', () => {
@@ -119,7 +112,7 @@ describe('version-fetcher', () => {
     versionFetcher.copyVersion('/a', '/b', 'kaki.json');
   });
 
-  it('should remove directories when done', (done) => {
+  it('should remove directories when done', () => {
     const cwd = '/';
     const randomDir1 = 'randomDir1';
     const randomDir2 = 'randomDir2';
@@ -127,29 +120,25 @@ describe('version-fetcher', () => {
       .onCall(0).returns(randomDir1)
       .onCall(1).returns(randomDir2);
 
-    Promise.all([
-      versionFetcher.fetch(packageName, packageVersion),
-      versionFetcher.cloneAndPack(cwd)])
-      .then(() => {
-        versionFetcher.cleanup();
-        expect(commands).to.contain('popd');
-        expect(commands).to.contain(`rm -rf ${rootTempPath + '/' + randomDir1}`);
-        expect(commands).to.contain(`rm -rf ${rootTempPath + '/' + randomDir2}`);
-        done();
-      });
+    versionFetcher.fetch(packageName, packageVersion);
+    versionFetcher.cloneAndPack(cwd);
+    versionFetcher.cleanup();
+    expect(commands).to.contain('popd');
+    expect(commands).to.contain(`rm -rf ${rootTempPath + '/' + randomDir1}`);
+    expect(commands).to.contain(`rm -rf ${rootTempPath + '/' + randomDir2}`);
   });
 
   describe('should propagate errors', () => {
     const cwd = '/';
 
-    //TODO handle errors in shelljs non-callbacked functions
-    describe('command err', () => {
+    // TODO handle errors in shelljs non-callbacked functions
+    describe('shelljs err', () => {
       let versionFetcher;
 
       beforeEach(() => {
         const givenNpmErr = {
           exec: () => {
-            throw 'error';
+            throw new Error('error');
           }
         };
 
@@ -158,48 +147,38 @@ describe('version-fetcher', () => {
           randomDirGenerator,
           packageHandler);
       });
-      it('fetch', (done) => {
-        versionFetcher.fetch('name', 'version')
-          .catch((err) => {
-            expect(err).to.be.equal('error');
-            done();
-          });
+      it('fetch', () => {
+        expect(() => versionFetcher.fetch('name', 'version')).to.throw('error');
       });
 
-      it('cloneAndPack', (done) => {
-        versionFetcher.cloneAndPack(cwd).catch((err) => {
-          expect(err).to.be.equal('error');
-          done();
-        });
+      it('cloneAndPack', () => {
+        expect(() => versionFetcher.cloneAndPack(cwd)).to.throw('error');
       });
     });
 
-    describe('command err', () => {
+    describe('commander err', () => {
       let versionFetcher;
 
       beforeEach(() => {
-        let shellErr = shell;
-        shellErr.exec = (cmd, cb) => cb(1, '123', 'error');
+        commander = {
+          exec: () => {
+            throw new Error('error');
+          }
+        };
+
 
         versionFetcher = VersionFetcher(commander,
-          shellErr,
+          shell,
           randomDirGenerator,
           packageHandler);
       });
 
-      it('fetch', (done) => {
-        versionFetcher.fetch('name', 'version')
-          .catch((err) => {
-            expect(err).to.be.equal('error');
-            done();
-          });
+      it('fetch', () => {
+        expect(() => versionFetcher.fetch('name', 'version')).to.throw('error');
       });
 
-      it('cloneAndPack', (done) => {
-        versionFetcher.cloneAndPack(cwd).catch((err) => {
-          expect(err).to.be.equal('error');
-          done();
-        });
+      it('cloneAndPack', () => {
+        expect(() => versionFetcher.cloneAndPack(cwd)).to.throw('error');
       });
     });
   });
