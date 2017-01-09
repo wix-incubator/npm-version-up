@@ -1,10 +1,9 @@
-var sinon = require('sinon');
-var expect = require('chai').expect;
-var assert = require('chai').assert;
-var _ = require('lodash');
-var VersionFetcher = require('../lib/VersionFetcher');
+const sinon = require('sinon'),
+  expect = require('chai').expect,
+  assert = require('chai').assert,
+  VersionFetcher = require('../lib/version-fetcher');
 
-describe('VersionFetcher', () => {
+describe('version-fetcher', () => {
   const packageVersion = '1.2.3';
   const packageName = 'moshe';
   const rootTempPath = '/tmp';
@@ -33,12 +32,10 @@ describe('VersionFetcher', () => {
     commands = [];
 
     commander = {
-      exec: (arg, cb) => {
+      exec: arg => {
         commands.push(arg);
         if (arg.indexOf('npm pack') > -1) {
-          cb(undefined, tarFileName);
-        } else {
-          cb();
+          return tarFileName;
         }
       }
     };
@@ -106,13 +103,8 @@ describe('VersionFetcher', () => {
     };
 
     const packageHandler = {
-      readPackageJson: (path) => {
-        return JSON.parse(jsons[path]);
-      },
-
-      writePackageJson: (currPackage, path) => {
-        jsons[path] = JSON.stringify(currPackage);
-      }
+      readPackageJson: path => JSON.parse(jsons[path]),
+      writePackageJson: (currPackage, path) => jsons[path] = JSON.stringify(currPackage)
     };
 
     const versionFetcher = VersionFetcher(commander, shell, randomDirGenerator, packageHandler);
@@ -138,7 +130,7 @@ describe('VersionFetcher', () => {
     Promise.all([
       versionFetcher.fetch(packageName, packageVersion),
       versionFetcher.cloneAndPack(cwd)])
-      .then( _ => {
+      .then(() => {
         versionFetcher.cleanup();
         expect(commands).to.contain('popd');
         expect(commands).to.contain(`rm -rf ${rootTempPath + '/' + randomDir1}`);
@@ -156,8 +148,8 @@ describe('VersionFetcher', () => {
 
       beforeEach(() => {
         const givenNpmErr = {
-          exec: (arg, cb) => {
-            cb('error');
+          exec: () => {
+            throw 'error';
           }
         };
 

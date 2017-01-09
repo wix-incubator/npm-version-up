@@ -1,11 +1,10 @@
-var expect = require('chai').expect;
-var _ = require('lodash');
-var versionCalc = require('../lib/version-calculator');
-var support = require('./support');
-var shelljs = require('shelljs');
-var commander = require('../lib/npm-commander');
-
-var index = require('..');
+const expect = require('chai').expect,
+  _ = require('lodash'),
+  versionCalc = require('../lib/version-calculator'),
+  support = require('./support'),
+  shelljs = require('shelljs'),
+  commander = require('../lib/npm-commander'),
+  index = require('..');
 
 const fixtures = require('./support/fixtures'),
   npmRegistry = require('./support/npm-registry');
