@@ -35,28 +35,22 @@ describe('version-comparator', () => {
     versionComparator = VersionComparator(directoryComparePaths, versionFetcher, shell);
   });
 
-  it("should fetch each version and pass it into the directory Diff", (done) => {
-    versionComparator.compare(aPackageName, aVersion).then(() => {
-      expect(directoryComparePaths.compareDirectories.calledWith(pathToPackedVersion, pathToRemoteVersion));
-      done();
-    });
+  it("should fetch each version and pass it into the directory Diff", () => {
+    versionComparator.compare(aPackageName, aVersion);
+    expect(directoryComparePaths.compareDirectories.calledWith(pathToPackedVersion, pathToRemoteVersion));
   });
 
-  it("should overwrite current version with pathToRemoteVersion", (done) => {
-    versionComparator.compare(aPackageName, aVersion).then(() => {
-      expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'package.json'));
-      expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'npm-shrinkwrap.json'));
-      expect(versionFetcher.copyVersion.secondCall.args[3]({version: '1', x: '1', o: {version: '2', x: '2'}}))
-        .to.eql({version: '1', o: {version: '2'}});
-      done();
-    });
+  it("should overwrite current version with pathToRemoteVersion", () => {
+    versionComparator.compare(aPackageName, aVersion);
+    expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'package.json'));
+    expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'npm-shrinkwrap.json'));
+    expect(versionFetcher.copyVersion.secondCall.args[3]({version: '1', x: '1', o: {version: '2', x: '2'}}))
+      .to.eql({version: '1', o: {version: '2'}});
   });
 
-  it('should cleanup after done', (done) => {
-    versionComparator.compare(aPackageName, aVersion).then(() => {
-      expect(versionFetcher.cleanup.called).to.be.true;
-      done();
-    });
+  it('should cleanup after done', () => {
+    versionComparator.compare(aPackageName, aVersion);
+    expect(versionFetcher.cleanup.called).to.be.true;
   });
 
 //   describe("should propagate errors", () => {
@@ -93,14 +87,12 @@ describe('version-comparator', () => {
 //     });
 //   });
 
-  it("should return to starting cwd", (done) => {
+  it("should return to starting cwd", () => {
     const versionComparator = VersionComparator(directoryComparePaths, versionFetcher, shell);
 
-    versionComparator.compare(aPackageName, aVersion).then(() => {
-      shell.cd.calledWith(cwd);
-      shell.cd.calledAfter(versionFetcher.fetch);
-      shell.cd.calledAfter(versionFetcher.cloneAndPack);
-      done()
-    });
+    versionComparator.compare(aPackageName, aVersion);
+    shell.cd.calledWith(cwd);
+    shell.cd.calledAfter(versionFetcher.fetch);
+    shell.cd.calledAfter(versionFetcher.cloneAndPack);
   });
 });

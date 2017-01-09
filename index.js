@@ -115,7 +115,7 @@ function isSameAsPublished(cb) {
         var directoryDiff = DirectoryDiff(shelljs);
         var versionComparator = VersionComparator(directoryDiff, versionFetcher, shelljs);
 
-        versionComparator.compare(packageName, currentPublishedVersion)
+        Promise.resolve().then(() => versionComparator.compare(packageName, currentPublishedVersion))
           .then(isPublishedVersionSimilar => cb(undefined, isPublishedVersionSimilar, currentPublishedVersion))
           .catch(err => cb(err));
       } else {
