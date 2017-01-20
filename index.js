@@ -45,8 +45,10 @@ function getRegistryPackageInfo(packageName) {
   const registryOption = registry ? "--registry " + registry : "";
 
   try {
-    const output = commander.execSilent("npm view " + registryOption + " --json " + packageName);
-    return JSON.parse(output);
+    const output = commander.execSilent("npm view --cache-min=0" + registryOption + " --json " + packageName);
+    const res = JSON.parse(output);
+    console.log('Version resolved from registry:', res['dist-tags'].latest);
+    return res;
   } catch (err) {
     if (err.message.indexOf("npm ERR! code E404") >= 0) {
       return undefined;
