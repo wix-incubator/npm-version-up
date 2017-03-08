@@ -36,7 +36,7 @@ describe('npm commander', function () {
 
     beforeEach(() => tempDir = support.clone({folder: './test/apps/without-nvmrc'}));
 
-    it.only('exec() should fail given an invalid command', () => {
+    it('exec() should fail given an invalid command', () => {
       expect(() => commander.exec('npmzqwe install')).to.throw('not found');
     });
 
