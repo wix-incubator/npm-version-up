@@ -3,7 +3,7 @@ const commander = require('../lib/npm-commander'),
   expect = require('chai').expect,
   intercept = require('intercept-stdout');
 
-describe('npm commander', function () {
+describe.only('npm commander', function () {
   this.timeout(10000);
   let tempDir, unhook, stdout = '';
 
@@ -22,7 +22,6 @@ describe('npm commander', function () {
     beforeEach(() => tempDir = support.clone({folder: './test/apps/with-nvmrc'}));
 
     it('exec() should fail given an invalid command', () => {
-      console.log(commander.exec('npmzqwe install'));
       expect(() => commander.exec('npmzqwe install')).to.throw('not found');
     });
 
