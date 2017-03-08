@@ -9,7 +9,7 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
   "scripts": {
     "test": "mocha",
     "release": "./scripts/npm-version-up.js --no-shrinkwrap"
