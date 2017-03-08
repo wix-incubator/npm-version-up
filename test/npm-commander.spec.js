@@ -3,7 +3,7 @@ const commander = require('../lib/npm-commander'),
   expect = require('chai').expect,
   intercept = require('intercept-stdout');
 
-describe.only('npm commander', function () {
+describe('npm commander', function () {
   this.timeout(30000);
   let tempDir, unhook, stdout = '';
 
