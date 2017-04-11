@@ -28,7 +28,11 @@ console.log('Adding user');
 fs.writeFileSync(join(dirs.userDir + 'qwe.json'), JSON.stringify(userData));
 
 npmRegistry = registry({
-  host: {port},
+  host: {
+    port: port,
+    hostname: 'localhost',
+    protocol: 'http',
+  },
   checkAuth: false,
   verbose: true,
   log: 'debug',
