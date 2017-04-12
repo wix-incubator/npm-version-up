@@ -1,7 +1,8 @@
 const expect = require('chai').expect,
   fixtures = require('./support/fixtures'),
   npmRegistry = require('./support/npm-registry'),
-  calculateNextVersionPackage = require('../lib/version-calculator').calculateNextVersionPackage;
+  calculateNextVersionPackage = require('../lib/version-calculator').calculateNextVersionPackage,
+  path = require('path');
 
 describe("npm-version-up", function () {
   this.timeout(20000);
@@ -46,6 +47,18 @@ describe("npm-version-up", function () {
     expect(module.hasFile('npm-shrinkwrap.json')).to.equal(false);
   });
 
+  it('should respect npmPackageVersion environment variable when calculating next version', () => {
+    module = fixtures
+      .module({publishConfig: {registry: registry.url}})
+      .switchTo()
+      .publishTo(registry.url)
+      .addFile('some-file', 'so-that-there-is-change');
+
+    module.exec('npmPackageVersion=1.0.5 ' + path.join(__dirname, '/../scripts/npm-version-up.js --no-shnrinkwrap'));
+
+    expect(module.readPackageJson().version).to.equal('1.0.6');
+  });
+
   it('should increment version and write npm-shrinkwrap.json for a published package', () => {
     module = fixtures.module({publishConfig: {registry: registry.url}})
       .switchTo()
@@ -63,7 +76,6 @@ describe("npm-version-up", function () {
     expect(module.hasFile('npm-shrinkwrap.json')).to.equal(true);
   });
 
-  //TODO: maybe unpm does not support npm pack?
   it('should not increment version if package was not updated', () => {
     module = fixtures
       .module({publishConfig: {registry: registry.url}})

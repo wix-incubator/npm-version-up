@@ -62,25 +62,6 @@ describe('api', function() {
     });
   });
 
-  describe("normalizeVersions", () => {
-
-    it("should support version that is not an array (happens when there is only one version)", () => {
-      expect(index.normalizeVersions("1.4")).to.deep.equal(["1.4"]);
-    });
-
-    it("should support no version", () => {
-      expect(index.normalizeVersions(undefined)).to.deep.equal([]);
-    });
-
-    it("should support empty array", () => {
-      expect(index.normalizeVersions([])).to.deep.equal([]);
-    });
-
-    it("should support empty string", () => {
-      expect(index.normalizeVersions("")).to.deep.equal([]);
-    });
-  });
-
   describe("incrementPatchVersionOfPackage", () => {
 
     it("should increment patch version of current package", () => {

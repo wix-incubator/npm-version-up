@@ -6,11 +6,11 @@ const versionCalc = require('./lib/version-calculator'),
   VersionComparator = require('./lib/version-comparator'),
   shelljs = require('shelljs'),
   fs = require('fs'),
+  _ = require('lodash'),
   randomDirGenerator = {generate: () => Math.ceil(Math.random() * 100000).toString()};
 
 module.exports.getRegistryPackageInfo = getRegistryPackageInfo;
 module.exports.findPublishedVersions = findPublishedVersions;
-module.exports.normalizeVersions = normalizeVersions;
 module.exports.isSameAsPublished = isSameAsPublished;
 module.exports.incrementPatchVersionOfPackage = incrementPatchVersionOfPackage;
 module.exports.prepareForRelease = prepareForRelease;
@@ -62,7 +62,10 @@ function findPublishedVersions(packageName) {
   const registryPackageInfo = getRegistryPackageInfo(packageName);
 
   if (registryPackageInfo) {
-    return normalizeVersions(registryPackageInfo.versions);
+    const versionsFromEnvVariable = [process.env['npmPackageVersion']];
+    const versionsFromRegistry = registryPackageInfo.versions || [];
+
+    return _.compact(versionsFromEnvVariable.concat(versionsFromRegistry)).sort();
   } else {
     return undefined;
   }
@@ -97,7 +100,7 @@ function incrementPatchVersionOfPackage() {
   const packageJson = packageHandler.readPackageJson();
   const packageName = packageJson.name;
   const localPackageVersion = packageJson.version;
-  const registryVersions = findPublishedVersions(packageName)
+  const registryVersions = findPublishedVersions(packageName);
 
   const nextVersion = versionCalc.calculateNextVersionPackage(localPackageVersion, registryVersions || []);
 
@@ -107,14 +110,4 @@ function incrementPatchVersionOfPackage() {
 
   commander.exec("npm version --no-git-tag-version " + nextVersion);
   return nextVersion;
-}
-
-function normalizeVersions(versions) {
-  if (!versions)
-    return [];
-
-  if (typeof versions === 'string')
-    return [versions];
-  else
-    return versions;
 }
