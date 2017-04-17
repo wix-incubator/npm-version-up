@@ -23,6 +23,11 @@ function prepareForRelease(options) {
     console.log("No release because package is private");
     return;
   }
+
+  if (options.shouldShrinkWrap) {
+    commander.exec("npm shrinkwrap");
+  }
+
   const {isPublishedVersionSimilar, currentPublishedVersion} = isSameAsPublished();
 
   if (isPublishedVersionSimilar) {
@@ -32,9 +37,6 @@ function prepareForRelease(options) {
     console.log("No release because it's already published");
   } else {
     incrementPatchVersionOfPackage();
-    if (options.shouldShrinkWrap) {
-      commander.exec("npm shrinkwrap");
-    }
   }
 }
 

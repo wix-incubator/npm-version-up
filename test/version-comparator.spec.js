@@ -44,8 +44,6 @@ describe('version-comparator', () => {
     versionComparator.compare(aPackageName, aVersion);
     expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'package.json'));
     expect(versionFetcher.copyVersion.calledWith(pathToPackedVersion, pathToRemoteVersion, 'npm-shrinkwrap.json'));
-    expect(versionFetcher.copyVersion.secondCall.args[3]({version: '1', x: '1', o: {version: '2', x: '2'}}))
-      .to.eql({version: '1', o: {version: '2'}});
   });
 
   it('should cleanup after done', () => {

@@ -4,7 +4,7 @@ const commander = require('../lib/npm-commander'),
   intercept = require('intercept-stdout');
 
 describe('npm commander', function () {
-  this.timeout(10000);
+  this.timeout(30000);
   let tempDir, unhook, stdout = '';
 
   beforeEach(() => {
