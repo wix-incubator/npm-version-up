@@ -63,7 +63,7 @@ describe('version-fetcher', () => {
     assert.deepEqual(commands, [
       'mkdir /tmp/v1',
       'pushd /tmp/v1',
-      `npm pack  ${packageName}@${packageVersion}`,
+      `npm pack  ${packageName}@${packageVersion} --quiet`,
       `tar -xf ${tarFileName}`
     ]);
     expect(pathToVersion).to.be.string(`${rootTempPath}/v1/package`);
@@ -76,7 +76,7 @@ describe('version-fetcher', () => {
     assert.deepEqual(commands, [
       'mkdir /tmp/v1',
       'pushd /tmp/v1',
-      `npm pack ${cwd}`,
+      `npm pack ${cwd} --quiet`,
       `tar -xf *.tgz`
     ]);
     expect(pathToCloned).to.be.string(`${rootTempPath}/v1/package`);
