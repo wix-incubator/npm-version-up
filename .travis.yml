@@ -12,6 +12,6 @@ deploy:
     secure: Oh2euecdzJY+9p7ZshqMMlGw0uiYF93qTD8LeHIB/W20FCecKmFGm2fZoHayo57MsCbsXiv4L6LhOsSKssRJfs9WQ0jfey2em2YykfN+UHJkZApfxR71NReT9KEdHR0r1FoLzgnkUpIsIWB3hArIs0179FJ6N9CiDl+mpdeqFacRBZLMpFVwLRSDRdXCykXydJF9jU+QB8f02SE7jqFVakkbZQU+KUSl52vv1DXva2G60LAXBLnBYqYT6zKCYgWKfItZs/oYSF/zY1ppXFFDgWvEOTpfwExzJ2t6AeVyaVxKn0Kxy4Tkpa9GC9xDWKazQptSauFujU19GYPdG2HnysqjWp0WXnZwFL/KPJtBgJU4pIelGBuSy6hqx1oo76FvuHvuTRU2+ZEZXm+cfKQ+m3eMqVwI3WAcps7pVesEI/GH33ih9rMuAXLubvl9jPBydpvWrcc/Q/o8XkfUVeoWLP5ruU5etqWZgjWieTB7uluNH9Cg/Xaq+EruznB4qAuyStWuNRB/Fqx08apuAjMvhhEQASJO0TIzrzaAghjBn6ntefDVzT5P25nHB4oRTaOtur5+Etp7skYYmN6HeAFop/AzU0WW7eJS9W720MyhhtUuGaJXQnhczE0l0vGIGVNXZph625Pom06uCzDIv6QjhcZ2Wv5/J6bD2/aElX4LFoo=
   on:
     branch: master
-    node: '7' # release only after last build success
+    node: '8' # release only after last build success
 
 

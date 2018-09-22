@@ -1,6 +1,6 @@
 {
   "name": "npm-version-up",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Auto-increment package version for deployment",
   "main": "index.js",
   "repository": {
