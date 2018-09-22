@@ -1,4 +1,4 @@
-# npm-version-up [![Build Status](https://img.shields.io/travis/wix/npm-version-up/master.svg?label=build%20status)](https://travis-ci.org/wix/npm-version-up) [![npm version](https://img.shields.io/npm/v/npm-version-up.svg)](https://www.npmjs.com/package/npm-version-up)
+# npm-version-up [![Build Status](https://img.shields.io/travis/wix/npm-version-up/master.svg?label=build%20status)](https://travis-ci.org/wix-incubator/npm-version-up) [![npm version](https://img.shields.io/npm/v/npm-version-up.svg)](https://www.npmjs.com/package/npm-version-up)
 
 **Work in Progress - do not USE!**
 
