@@ -1,6 +1,6 @@
 {
   "name": "npm-version-up",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Auto-increment package version for deployment",
   "main": "index.js",
   "repository": {
@@ -11,8 +11,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "test": "mocha",
-    "release": "./scripts/npm-version-up.js --no-shrinkwrap"
+    "test": "mocha --reporter mocha-env-reporter --timeout 60000",
+    "release": "./scripts/npm-version-up.js"
   },
   "keywords": [
     "npm",
@@ -24,22 +24,16 @@
   "bin": {
     "npm-version-up": "./scripts/npm-version-up.js"
   },
-  "devDependencies": {
-    "chai": "~3.5.0",
-    "intercept-stdout": "^0.1.2",
-    "lodash": "~4.17.4",
-    "mocha": "~3.2.0",
-    "semver": "~5.3.0",
-    "sinon": "~1.17.7",
-    "sinon-chai": "~2.8.0",
-    "unpm": "~1.5.0",
-    "unpm-fs-backend": "~0.1.0"
-  },
   "dependencies": {
-    "lodash": "^4.17.4",
-    "shelljs": "^0.5.3"
+    "wnpm-ci": "^7.0.1"
   },
   "engines": {
     "node": ">=6"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "mocha-env-reporter": "^3.0.0",
+    "tmp": "0.0.33"
   }
 }
